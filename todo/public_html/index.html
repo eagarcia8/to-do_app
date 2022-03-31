@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do App</title>
+
+    <style>
+        #create-task {
+            border: 1px dashed black;
+        }
+    </style>
+
+    <script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <h1>To Do App</h1>
+
+    <div id="create-task">
+        <h2>Create Task</h2>
+        <label for="task-description">Task Description</label><br />
+        <input type="text" id="task-description" /><br />
+        <label for="task-notes">Additional Notes</label><br />
+        <input type="text" id="task-notes" placeholder="(optional)" /><br />
+        <label for="task-due-date">Due Date</label><br />
+        <input type="date" id="task-due-date" value="2022-03-30"/><br />
+        <div id="priority">
+            <input type="radio" name="priority" id="low" />
+            <label for="low">Worthless</label><br />
+            <input type="radio" name="priority" id="medium" checked="checked" />
+            <label for="medium">Intermediate</label><br />
+            <input type="radio" name="priority" id="high" />
+            <label for="high">Urgent</label><br />
+        </div>
+        <button id="create-button">Create Task!</button>
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+
+            // Set the Due Date on the Create Task section to Today's Date.
+            let today = new Date();
+            let todayString = `${today.getFullYear()}-${today.getMonth().toString().padStart(2, "0")}-${today.getDate()}`;
+            
+            console.log(todayString.length);
+
+            $("#task-due-date").attr("value", todayString);
+
+
+
+        });
+    </script>
+</body>
+</html>

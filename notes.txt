@@ -1,0 +1,79 @@
+To Do App Definition:
+Plan tasks
+Making a list, multiple lists (for subjects/topics)
+time management - due dates and times
+what to do in what order, Prioritize items
+focus - the app should tell you what is most crucial task right now.
+add, edit, read, delete tasks
+add notes to each task
+Marking tasks as complete
+
+CODE TASKS
+Front-end web page - allows the user to create tasks, edit tasks, delete tasks, and read tasks.
+Will the website have multiple web pages or a single page ("app").
+If HTTP Requests fail, mention on website for that action that failed.
+
+
+Front-End Goals
+
+Create Tasks:
+Textbox - for task description. Show message if empty.
+Textbox - for additional task notes (Optional)
+Dropdown Box - Select the due date (does not include time). (Optional)
+Priority - 3 levels (user choice) (Optional)
+Submit Button - Creates the task
+Cancel Button (depending on UI)
+
+When the user presses the Submit button, add a timestamp to the task for creation date.
+
+Edit Tasks:
+Same thing as Create Tasks, but loads in existing values. Submit button - Says "Update Task" instead.
+Delete Button - Removes the current Task from the To Do App.
+
+Delete Task:
+Delete Button - creates confirmation popup.
+Confirmation - pop up asking to confirm. Warning on irreversible action. If accepted, then delete. Future Feature: If we have a "trash can" or "history" feature, do we need a pop up?
+
+Read Tasks:
+List all Tasks
+For each Task, display: Completed or not completed. Complete Button. Delete Button. Edit Button. Task Description.
+Ordering: based on priority, dates, and complete/not complete status
+
+
+Settings Page:
+For quick task creation, we need to make some of these optional, or have default values.
+    Make a settings page that allows the change of default values:
+        Date: start with one week.
+        Smart Ordering: ordering is based on percentage of time passed for task.
+
+
+
+
+Back-end - saving and retrieving tasks. Serving web pages.
+
+Read
+Package up all Task Objects in an Array and send them to the front end.
+
+Edit
+Recieve the Task to be Edited (usually through an ID), and change the existing values stored with the new values provided. Return confirmation of change.
+
+Add
+Recieve a Task Object, and add it to the existing set of Tasks. Create and attach an ID to this new Task. Return confirmation of new Task. Set the complete property to false.
+
+Delete
+Find Task to be Deleted, and remove it from the set of Tasks. Return confirmation of deletion or failed to find Task to delete.
+
+Mark Task as Complete
+Find Task to be marked, and change the Complete property to true.
+
+
+
+
+FUTURE FEATURES
+Multiple List Feature
+User Login / Accounts
+Show error when putting in a due date that is in the past.
+Better wording for priority levels
+
+FUTURE NOTES
+Add cancel button to create task section if it is moved into a popup.
