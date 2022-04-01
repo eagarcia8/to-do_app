@@ -77,3 +77,8 @@ Better wording for priority levels
 
 FUTURE NOTES
 Add cancel button to create task section if it is moved into a popup.
+
+BUGS
+The value for date input is not "correct" even though we provide a properly formatted value.
+
+When converting HTML dates to JavaScript Dates, the date changes by -1 day.

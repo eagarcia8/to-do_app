@@ -1,0 +1,27 @@
+POST: Create Task
+name: createTask
+The Date String format will be the default value that Date object gives.
+send Front -> Back:
+{
+    description: String,
+    notes: String,
+    dueDate: String (date),
+    created: String (date),
+    priority: String (1, 2, or 3),
+    deleted: String (date or empty) (is this needed?),
+    completed: String (date or empty)
+}
+recieve:
+{
+    message: String,
+    error: boolean
+}
+
+POST: List Tasks
+name: list
+send Front -> Back:
+{}
+recieve:
+{
+    list: Array
+}

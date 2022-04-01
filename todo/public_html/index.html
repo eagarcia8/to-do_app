@@ -7,7 +7,7 @@
     <title>To Do App</title>
 
     <style>
-        #create-task {
+        #create-task, #list-tasks {
             border: 1px dashed black;
         }
     </style>
@@ -30,30 +30,86 @@
         <label for="task-due-date">Due Date</label><br />
         <input type="date" id="task-due-date" value="2022-03-30"/><br />
         <div id="priority">
-            <input type="radio" name="priority" id="low" />
+            <input type="radio" name="priority" id="low" value="1" />
             <label for="low">Worthless</label><br />
-            <input type="radio" name="priority" id="medium" checked="checked" />
+            <input type="radio" name="priority" id="medium" value="2" checked="checked" />
             <label for="medium">Intermediate</label><br />
-            <input type="radio" name="priority" id="high" />
+            <input type="radio" name="priority" id="high" value="3" />
             <label for="high">Urgent</label><br />
         </div>
         <button id="create-button">Create Task!</button>
+        <p id="message"></p>
+    </div>
+
+    <div id="list-tasks">
+        <h2>To Do List</h2>
+        <ul id="tasks"></ul>
     </div>
     
     <script>
         $(document).ready(function () {
 
+
             // Set the Due Date on the Create Task section to Today's Date.
-            let today = new Date();
-            let todayString = `${today.getFullYear()}-${today.getMonth().toString().padStart(2, "0")}-${today.getDate()}`;
+            //let today = new Date();
+            //let todayString = `${today.getFullYear()}-${today.getMonth().toString().padStart(2, "0")}-${today.getDate()}`;
+            //console.log(todayString.length);
+            //BUG, value is "invalid".
+            //$("#task-due-date").attr("value", todayString);
+
+            $.post("http://localhost:3000/list", {}, function (response) {
+                updateList(response.list);
+            });
+
+            // Run The following code when user presses on the Create button...
+            $("#create-button").click(function () {
             
-            console.log(todayString.length);
+                // Build an object that holds the values provided by the user in the HTML forms. Generate time stamps as well.
+                let newTask = {
+                    description: $("#task-description").val(),
+                    notes: $("#task-notes").val(),
+                    dueDate: (new Date($("#task-due-date").val())).toString(),
+                    created: (new Date()).toString(),
+                    priority: $("input[name=priority]:checked").val(),
+                    deleted: "",
+                    completed: ""
+                };
 
-            $("#task-due-date").attr("value", todayString);
+                // Send the object to the createTask Post handler. Console log the response of the server.
+                $.post("http://localhost:3000/createTask", newTask, function (response) {
+                    
+                    $("#message").html(response.message);
 
+                    if (response.error) {
+                        $("#message").css("color", "red"); 
+                    } else {
+                        $("#message").css("color", "green");
+                    }
 
+                    $.post("http://localhost:3000/list", {}, function (response) {
+                        updateList(response.list);
+                    });
+
+                });
+
+            });
 
         });
+
+        function updateList(arrayList) {
+
+            $("#tasks").html("");
+
+            for (let i = 0; i < arrayList.length; i++) {
+
+                let task = arrayList[i];
+
+                let html = `<li>Task: ${task.description}<br />Due By: ${task.dueDate}<br />Notes: ${task.notes}<br />Priority: ${task.priority}</li>`;
+
+                $("#tasks").append(html);
+            }
+
+        }
     </script>
 </body>
 </html>
