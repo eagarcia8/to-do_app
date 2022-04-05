@@ -10,6 +10,7 @@ send Front -> Back:
     priority: String (1, 2, or 3),
     deleted: String (date or empty) (is this needed?),
     completed: String (date or empty)
+    id: String
 }
 recieve:
 {
@@ -24,4 +25,41 @@ send Front -> Back:
 recieve:
 {
     list: Array
+}
+
+POST: Edit Task
+name: editTask
+send Front -> Back:
+{
+    description: String,
+    notes: String,
+    dueDate: String (date),
+    created: String (date),
+    priority: String (1, 2, or 3),
+    deleted: String (date or empty) (is this needed?),
+    completed: String (date or empty)
+    id: String
+}
+recieve:
+{
+    message: String,
+    error: boolean
+}
+
+POST: Get Task
+name: getTask
+send Front -> End
+{
+	id: String
+}
+recieve:
+{
+    description: String,
+    notes: String,
+    dueDate: String (date),
+    created: String (date),
+    priority: String (1, 2, or 3),
+    deleted: String (date or empty) (is this needed?),
+    completed: String (date or empty)
+    id: String
 }

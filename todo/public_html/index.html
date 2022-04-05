@@ -104,10 +104,42 @@
 
                 let task = arrayList[i];
 
-                let html = `<li>Task: ${task.description}<br />Due By: ${task.dueDate}<br />Notes: ${task.notes}<br />Priority: ${task.priority}</li>`;
+                let html = `<li id="${task.id}">Task: ${task.description}<br />Due By: ${task.dueDate}<br />Notes: ${task.notes}<br />Priority: ${task.priority}<br /><button class="edit-button">Edit</button></li>`;
 
                 $("#tasks").append(html);
+  
             }
+            
+            $(".edit-button").click(function () {
+
+                var currentLi = $(this).parent();
+                
+                const dataToSend = {
+                    id: currentLi.attr("id")
+                };
+
+                console.log(dataToSend);
+                
+                // $(this).parent().empty();
+
+                $.post("http://localhost:3000/getTask", dataToSend, function (response) {
+
+                    console.log(response);
+
+                    let html = `
+                    <li id=${response.id}>Task: <input type="text" value="${response.description}"><br />
+                        Due By: ${response.dueDate}<br />
+                        Notes: <input type="text" value="${response.notes}"><br />
+                        Priority: ${response.priority}<br />
+                        <button class="edit-button">Edit</button>
+                    </li>`;
+
+                    currentLi.html(html);
+
+                });
+
+                
+            });
 
         }
     </script>
