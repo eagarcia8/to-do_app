@@ -79,6 +79,9 @@ Better wording for priority levels
 
 FUTURE NOTES
 Add cancel button to create task section if it is moved into a popup.
+Remove MD5 Implementation as MongoDB IDs will take over.
+Add Pagination to To Do List to avoid very large database responses.
+
 
 BUGS
 The value for date input is not "correct" even though we provide a properly formatted value.
@@ -86,3 +89,5 @@ The value for date input is not "correct" even though we provide a properly form
 When converting HTML dates to JavaScript Dates, the date changes by -1 day.
 
 If a task is not found under getTask, we need to send an error message.
+
+For the /list post method, we do not handle errors on the front end, we only expect a list.
