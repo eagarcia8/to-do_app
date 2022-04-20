@@ -104,15 +104,48 @@
 
                 let task = arrayList[i];
 
-                let html = `<li id="${task.id}">Task: ${task.description}<br />Due By: ${task.dueDate}<br />Notes: ${task.notes}<br />Priority: ${task.priority}<br /><button class="edit-button">Edit</button></li>`;
+                let html = `
+                <li id="${task._id}">Task: ${task.description}<br />
+                    Due By: ${task.dueDate}<br />
+                    Notes: ${task.notes}<br />
+                    Priority: ${task.priority}<br />
+                    <button class="edit-button">Edit</button>
+                    <button class="complete-button">Complete</button>
+                </li>`;
 
                 $("#tasks").append(html);
   
             }
             
-            $(".edit-button").click(function () {
+            $(".edit-button").click(editTask);
+            $(".complete-button").click(completeTask);
+        }
 
-                var currentLi = $(this).parent();
+        function completeTask(task) {
+
+            var currentLi = $(this).parent();
+
+            let dataToSend = {
+                _id: currentLi.attr("id")
+            };
+
+            $.post("http://localhost:3000/completeTask", dataToSend, function (response) {
+                console.log(response.success);
+               
+                if (response.success) {
+                    console.log("Task Completed!");
+                } else {
+                    console.log("Something happened in the back-end.");
+                }
+            });
+        }
+
+        function editTask() {
+
+            // this might be the issue with the problem below
+            var currentLi = $(this).parent();
+
+                console.log(currentLi);
                 
                 const dataToSend = {
                     id: currentLi.attr("id")
@@ -124,23 +157,44 @@
 
                 $.post("http://localhost:3000/getTask", dataToSend, function (response) {
 
+                    console.log("Something");
                     console.log(response);
 
                     let html = `
-                    <li id=${response.id}>Task: <input type="text" value="${response.description}"><br />
+                    <li id=${response._id}>Task: <input type="text" value="${response.description}"><br />
                         Due By: ${response.dueDate}<br />
                         Notes: <input type="text" value="${response.notes}"><br />
-                        Priority: ${response.priority}<br />
-                        <button class="edit-button">Edit</button>
+                        Priority: <input type="number" max="3" min="1" value="${response.priority}"><br />
+                        <button class="cancel-button">Cancel</button>
+                        <button class="save-button">Save Changes</button>
                     </li>`;
 
                     currentLi.html(html);
 
+                    $(".cancel-button").click(function () {
+                        cancelTask(response, currentLi);
+                    });
+
                 });
+        }
 
-                
+        function cancelTask(response, currentLi) {
+            let html = `
+            Task: ${response.description}<br />
+            Due By: ${response.dueDate}<br />
+            Notes: ${response.notes}<br />
+            Priority: ${response.priority}<br />
+            <button class="edit-button">Edit</button>`
+            ;
+
+            // Think about the logic with currentLi, appears to be "missing" children.
+            currentLi.html(html);
+            let newEditButton = currentLi.children(".edit-button")[0];
+            console.log(newEditButton);
+
+            newEditButton.click(function() {
+                console.log("pressed!");
             });
-
         }
     </script>
 </body>

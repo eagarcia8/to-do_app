@@ -81,6 +81,7 @@ FUTURE NOTES
 Add cancel button to create task section if it is moved into a popup.
 Remove MD5 Implementation as MongoDB IDs will take over.
 Add Pagination to To Do List to avoid very large database responses.
+Check out the Nodemon package
 
 
 BUGS
@@ -91,3 +92,6 @@ When converting HTML dates to JavaScript Dates, the date changes by -1 day.
 If a task is not found under getTask, we need to send an error message.
 
 For the /list post method, we do not handle errors on the front end, we only expect a list.
+
+
+URGENT: IDs are gone on the front-end, fix asap

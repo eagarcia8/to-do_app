@@ -126,15 +126,38 @@ app.post("/list", function (request, response) {
 
 app.post("/getTask", function (request, response) {
 
-    for (let i = 0; i < tasks.length; i++) {
-        if (tasks[i].id === request.body.id) {
+    notesModel.find({_id: request.body.id}, function (error, results) {
+        checkError(error, "Successfully searched documents.");
 
-            response.send(tasks[i]);
+        response.send(results[0]);
+    });
 
-        }
-    }
+    // for (let i = 0; i < tasks.length; i++) {
+    //     if (tasks[i].id === request.body.id) {
+
+    //         response.send(tasks[i]);
+
+    //     }
+    // }
 
     // Return error message if we don't find the object.
+
+});
+
+app.post("/completeTask", function (request, response) {
+
+    let taskId = request.body._id;
+
+    notesModel.findByIdAndUpdate({_id: taskId}, {completed: "true"}, function (error, results) {
+        checkError(error, "Successfully updated a document");
+
+
+        if (error) {
+            response.send({success: false});
+        } else {
+            response.send({success: true});
+        }
+    });
 
 });
 
