@@ -115,6 +115,7 @@
                     Priority: ${task.priority}<br />
                     <button class="edit-button">Edit</button>
                     <button class="complete-button">Complete</button>
+                    <button class="delete-button">Delete</button>
                 </li>`;
 
                 $("#tasks").append(html);
@@ -129,6 +130,11 @@
             $(".complete-button").click(function () {
                 const task = $(this).parent();
                 completeTask(task);
+            });
+
+            $(".delete-button").click(function () {
+                const task = $(this).parent();
+                deleteTask(task);
             });
         }
 
@@ -195,11 +201,14 @@
                 Priority: ${response.priority}<br />
                 <button class="edit-button">Edit</button>
                 <button class="complete-button">Complete</button>
+                <button class="delete-button">Delete</button>
             `;
 
             taskLi.html(html);
             let newEditButton = taskLi.children(".edit-button");
             let newCompleteButton = taskLi.children(".complete-button");
+            let newDeleteButton = taskLi.children(".delete-button");
+
 
             newEditButton.click(function() {
                 editTask(taskLi);
@@ -207,6 +216,10 @@
 
             newCompleteButton.click(function() {
                 completeTask(taskLi);
+            });
+
+            newDeleteButton.click(function() {
+                deleteTask(taskLi);
             });
         }
 
@@ -231,11 +244,14 @@
                     Priority: ${priorityUpdate}<br />
                     <button class="edit-button">Edit</button>
                     <button class="complete-button">Complete</button>
+                    <button class="delete-button">Delete</button>
                 `;
 
                 taskLi.html(html);
                 let newEditButton = taskLi.children(".edit-button");
                 let newCompleteButton = taskLi.children(".complete-button");
+                let newDeleteButton = taskLi.children(".delete-button");
+
 
                 newEditButton.click(function() {
                     editTask(taskLi);
@@ -244,6 +260,23 @@
                 newCompleteButton.click(function() {
                     completeTask(taskLi);
                 });
+
+                newDeleteButton.click(function() {
+                    deleteTask(taskLi);
+                });
+            });
+        }
+
+        function deleteTask(taskLi) {
+
+            const objectToDelete = {
+                _id: taskLi.attr("id")
+            }
+
+            $.post("http://localhost:3000/deleteTask", objectToDelete, function(response) {
+                console.log(response);
+
+                taskLi.remove();
             });
         }
     </script>

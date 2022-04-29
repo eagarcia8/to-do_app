@@ -144,6 +144,19 @@ app.post("/getTask", function (request, response) {
 
 });
 
+app.post("/deleteTask", function (request, response) {
+    notesModel.findByIdAndRemove({_id: request.body._id}, function(error, results) {
+        checkError(error, "Successfully searched documents.");
+
+        const objectToSend = {
+            success: true,
+            oldCopy: results
+        };
+
+        response.send(objectToSend);
+    });
+});
+
 app.post("/completeTask", function (request, response) {
 
     let taskId = request.body._id;

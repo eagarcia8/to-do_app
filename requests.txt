@@ -88,3 +88,14 @@ recieve:
 {
 	success: Boolean
 }
+
+POST: Delete Task
+name: deleteTask
+send Front -> End
+{
+	_id: String
+}
+recieve: {
+	success: Boolean,
+	oldCopy: object
+}
