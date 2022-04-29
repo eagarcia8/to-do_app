@@ -96,6 +96,7 @@
 
         });
 
+        // This function will take in an array of ToDo objects, and create a LI element for each of them and place inside of the existing UL on the web page. This function also deletes any existing items in the UL.
         function updateList(arrayList) {
 
             $("#tasks").html("");
@@ -103,6 +104,9 @@
             for (let i = 0; i < arrayList.length; i++) {
 
                 let task = arrayList[i];
+
+                //let exampleHTML = "<li id=\"" + task.id + "\">Task: " + task.description +
+                //    "<br />";...
 
                 let html = `
                 <li id="${task._id}">Task: ${task.description}<br />
@@ -116,20 +120,29 @@
                 $("#tasks").append(html);
   
             }
-            
-            $(".edit-button").click(editTask);
-            $(".complete-button").click(completeTask);
+
+            $(".edit-button").click(function () {
+                const task = $(this).parent();
+                editTask(task);
+            });
+
+            $(".complete-button").click(function () {
+                const task = $(this).parent();
+                completeTask(task);
+            });
         }
 
-        function completeTask(task) {
 
-            var currentLi = $(this).parent();
+
+        function completeTask(taskLi) {
 
             let dataToSend = {
-                _id: currentLi.attr("id")
+                _id: taskLi.attr("id")
             };
 
             $.post("http://localhost:3000/completeTask", dataToSend, function (response) {
+                
+                // Update this so we see a message on the website.
                 console.log(response.success);
                
                 if (response.success) {
@@ -140,60 +153,55 @@
             });
         }
 
-        function editTask() {
-
-            // this might be the issue with the problem below
-            var currentLi = $(this).parent();
-
-                console.log(currentLi);
+        function editTask(taskLi) {
                 
-                const dataToSend = {
-                    id: currentLi.attr("id")
-                };
+            const dataToSend = {
+                id: taskLi.attr("id")
+            };
 
-                console.log(dataToSend);
-                
-                // $(this).parent().empty();
+            $.post("http://localhost:3000/getTask", dataToSend, function (response) {
 
-                $.post("http://localhost:3000/getTask", dataToSend, function (response) {
+                console.log("Server Response: " + response);
 
-                    console.log("Something");
-                    console.log(response);
+                let html = `
+                    Task: <input type="text" value="${response.description}"><br />
+                    Due By: ${response.dueDate}<br />
+                    Notes: <input type="text" value="${response.notes}"><br />
+                    Priority: <input type="number" max="3" min="1" value="${response.priority}"><br />
+                    <button class="cancel-button">Cancel</button>
+                    <button class="save-button">Save Changes</button>
+                `;
 
-                    let html = `
-                    <li id=${response._id}>Task: <input type="text" value="${response.description}"><br />
-                        Due By: ${response.dueDate}<br />
-                        Notes: <input type="text" value="${response.notes}"><br />
-                        Priority: <input type="number" max="3" min="1" value="${response.priority}"><br />
-                        <button class="cancel-button">Cancel</button>
-                        <button class="save-button">Save Changes</button>
-                    </li>`;
+                taskLi.html(html);
 
-                    currentLi.html(html);
-
-                    $(".cancel-button").click(function () {
-                        cancelTask(response, currentLi);
-                    });
-
+                $(".cancel-button").click(function () {
+                    cancelTask(taskLi, response);
                 });
+
+            });
         }
 
-        function cancelTask(response, currentLi) {
+        function cancelTask(taskLi, response) {
+            
             let html = `
-            Task: ${response.description}<br />
-            Due By: ${response.dueDate}<br />
-            Notes: ${response.notes}<br />
-            Priority: ${response.priority}<br />
-            <button class="edit-button">Edit</button>`
-            ;
+                Task: ${response.description}<br />
+                Due By: ${response.dueDate}<br />
+                Notes: ${response.notes}<br />
+                Priority: ${response.priority}<br />
+                <button class="edit-button">Edit</button>
+                <button class="complete-button">Complete</button>
+            `;
 
-            // Think about the logic with currentLi, appears to be "missing" children.
-            currentLi.html(html);
-            let newEditButton = currentLi.children(".edit-button")[0];
-            console.log(newEditButton);
+            taskLi.html(html);
+            let newEditButton = taskLi.children(".edit-button");
+            let newCompleteButton = taskLi.children(".complete-button");
 
             newEditButton.click(function() {
-                console.log("pressed!");
+                editTask(taskLi);
+            });
+
+            newCompleteButton.click(function() {
+                completeTask(taskLi);
             });
         }
     </script>
