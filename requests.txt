@@ -74,3 +74,17 @@ recieve:
 {
 	success: Boolean
 }
+
+POST: Update Task
+name: updateTask
+send Front -> End
+{
+_id: String,
+description: String,
+notes: String,
+priority: String
+}
+recieve:
+{
+	success: Boolean
+}

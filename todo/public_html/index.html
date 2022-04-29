@@ -132,8 +132,6 @@
             });
         }
 
-
-
         function completeTask(taskLi) {
 
             let dataToSend = {
@@ -164,18 +162,25 @@
                 console.log("Server Response: " + response);
 
                 let html = `
-                    Task: <input type="text" value="${response.description}"><br />
+                    Task: <input class="update-description" type="text" value="${response.description}"><br />
                     Due By: ${response.dueDate}<br />
-                    Notes: <input type="text" value="${response.notes}"><br />
-                    Priority: <input type="number" max="3" min="1" value="${response.priority}"><br />
+                    Notes: <input class="update-notes" type="text" value="${response.notes}"><br />
+                    Priority: <input class="update-priority" type="number" max="3" min="1" value="${response.priority}"><br />
                     <button class="cancel-button">Cancel</button>
                     <button class="save-button">Save Changes</button>
                 `;
 
                 taskLi.html(html);
 
-                $(".cancel-button").click(function () {
+                const newCancelButton = taskLi.children(".cancel-button");
+                const newSaveButton = taskLi.children(".save-button");
+
+                newCancelButton.click(function () {
                     cancelTask(taskLi, response);
+                });
+
+                newSaveButton.click(function () {
+                    updateTask(taskLi);
                 });
 
             });
@@ -202,6 +207,43 @@
 
             newCompleteButton.click(function() {
                 completeTask(taskLi);
+            });
+        }
+
+        function updateTask(taskLi) {
+            const descriptionUpdate = taskLi.children(".update-description").val();
+            const notesUpdate = taskLi.children(".update-notes").val();
+            const priorityUpdate = taskLi.children(".update-priority").val();
+
+            const updateDetails = {
+                _id: taskLi.attr("id"),
+                description: descriptionUpdate,
+                notes: notesUpdate,
+                priority: priorityUpdate
+            };
+
+            $.post("http://localhost:3000/updateTask", updateDetails, function (response) {
+
+                let html = `
+                    Task: ${descriptionUpdate}<br />
+                    Due By: <br />
+                    Notes: ${notesUpdate}<br />
+                    Priority: ${priorityUpdate}<br />
+                    <button class="edit-button">Edit</button>
+                    <button class="complete-button">Complete</button>
+                `;
+
+                taskLi.html(html);
+                let newEditButton = taskLi.children(".edit-button");
+                let newCompleteButton = taskLi.children(".complete-button");
+
+                newEditButton.click(function() {
+                    editTask(taskLi);
+                });
+
+                newCompleteButton.click(function() {
+                    completeTask(taskLi);
+                });
             });
         }
     </script>

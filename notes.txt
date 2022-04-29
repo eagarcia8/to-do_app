@@ -93,5 +93,7 @@ If a task is not found under getTask, we need to send an error message.
 
 For the /list post method, we do not handle errors on the front end, we only expect a list.
 
+When we cancel a Todo item changes on the front-end, we also cancel any other todo item that is currently be edited, after the current ToDo
+
 
 URGENT: IDs are gone on the front-end, fix asap

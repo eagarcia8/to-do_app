@@ -151,7 +151,6 @@ app.post("/completeTask", function (request, response) {
     notesModel.findByIdAndUpdate({_id: taskId}, {completed: "true"}, function (error, results) {
         checkError(error, "Successfully updated a document");
 
-
         if (error) {
             response.send({success: false});
         } else {
@@ -159,6 +158,27 @@ app.post("/completeTask", function (request, response) {
         }
     });
 
+});
+
+app.post("/updateTask", function (request, response) {
+    let taskId = request.body._id;
+
+    // We could delete _id in request object, but may be more confusing.
+    let updates = {
+        notes: request.body.notes,
+        description: request.body.description,
+        priority: request.body.priority
+    }
+
+    notesModel.findByIdAndUpdate({_id: taskId}, updates, function (error, results) {
+        checkError(error, "Successfully updated a document");
+        
+        if (error) {
+            response.send({success: false});
+        } else {
+            response.send({success: true});
+        }
+    });
 });
 
 function checkError(error, successMessage) {
