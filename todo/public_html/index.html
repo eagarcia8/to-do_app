@@ -7,8 +7,13 @@
     <title>To Do App</title>
 
     <style>
-        #create-task, #list-tasks {
+        #create-task, #list-tasks, #login, #logout {
             border: 1px dashed black;
+            margin: 10px;
+        }
+
+        #logout {
+            display: none;
         }
     </style>
 
@@ -20,6 +25,20 @@
 <body>
 
     <h1>To Do App</h1>
+
+    <div id="login">
+        <label for="username">Username:</label><br />
+        <input type="text" id="username" /><br />
+        <label for="password">Password:</label><br />
+        <input type="password" id="password" />
+        <button id="login-button">Login</button>
+        <p id="login-message"></p>
+    </div>
+
+    <div id="logout">
+        <p id="user-message"></p>
+        <button id="logout-button">Logout</button>
+    </div>
 
     <div id="create-task">
         <h2>Create Task</h2>
@@ -49,6 +68,66 @@
     <script>
         $(document).ready(function () {
 
+            $.post("http://localhost:3000/userSession", {type: "continue", username: null, password: null}, function (response) {
+                console.log(response);
+
+                if (response.message === "") {
+                        $("#login").hide();
+                        $("#user-message").html(`Welcome, ${response.username}!`);
+                        $("#logout").show();
+                    } else {
+                        $("#login-message").html(response.message);
+                        $("#username").val("");
+                        $("#password").val("");
+                    }
+            });
+
+
+            $("#login-button").click(function () {
+
+                const details = {
+                    type: "login",
+                    username: $("#username").val(),
+                    password: $("#password").val() 
+                };
+
+                $.post("http://localhost:3000/userSession", details, function (response) {
+                    
+                    if (response.message === "") {
+                        $("#login").hide();
+                        $("#user-message").html(`Welcome, ${details.username}!`);
+                        $("#logout").show();
+
+                        $.post("http://localhost:3000/list", {}, function (response) {
+                            updateList(response.list);
+                        });
+                    } else {
+                        $("#login-message").html(response.message);
+                        $("#username").val("");
+                        $("#password").val("");
+                    }
+
+                    
+                });
+            });
+
+            $("#logout-button").click(function () {
+                const details = {
+                    type: "logout",
+                    username: null,
+                    password: null
+                };
+
+                $.post("http://localhost:3000/userSession", details, function (response) {
+                    $("#logout").hide();
+
+                    $("#user-message").html("");
+                    $("#username").val("");
+                    $("#password").val("");
+
+                    $("#login").show();
+                });
+            });
 
             // Set the Due Date on the Create Task section to Today's Date.
             //let today = new Date();

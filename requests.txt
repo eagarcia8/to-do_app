@@ -99,3 +99,18 @@ recieve: {
 	success: Boolean,
 	oldCopy: object
 }
+
+POST: Login/Logout User
+name: userSession
+send Front -> End
+send:
+{
+	type: String (login or logout)
+	username: String,
+	password: String,
+}
+recieve:
+{
+	username: String,
+	message: String
+}

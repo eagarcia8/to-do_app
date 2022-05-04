@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const req = require("express/lib/request");
 const md5 = require("md5");
 const credentials = require("./credentials.js");
+const session = require("express-session");
 
 // Express setup.
 const app = express();
@@ -15,6 +16,14 @@ console.log(`Express server is running on port ${port}.`);
 // Use body-parser to convert our front-end data into JavaScript Objects.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
+// Session Setup
+app.use(session({
+    secret: "keyboard dog",
+    resave: false,
+    saveUninitialized: true,
+    //cookie: { secure: true } CANNOT be shared between methods (very likely "private" variable)
+}));
 
 // Custom Variables
 const tasks = [];
@@ -36,6 +45,7 @@ mongoose.Promise = global.Promise;
 
 // MongoDB Schema
 let notesStructure = {
+    owner: String,
     description: String,
     notes: String,
     dueDate: String,
@@ -47,11 +57,67 @@ let notesStructure = {
 let notesSchema = new mongoose.Schema(notesStructure);
 let notesModel = new mongoose.model("notes", notesSchema);
 
+let usersStructure = {
+    username: String,
+    password: String,
+    email: String,
+    salt: String,
+};
+
+let userSchema = new mongoose.Schema(usersStructure);
+let usersModel = new mongoose.model("users", userSchema);
+
 
 // Express Routes
 app.use("/", express.static("public_html/"));
 
 // POST Handlers
+app.post("/userSession", function (request, response) {
+
+    const userDetails = request.body;
+
+    if (userDetails.type === "login") {
+
+        const userQuery = {
+            username: userDetails.username,
+            password: md5(userDetails.password)
+        }
+
+        usersModel.find(userQuery, function (error, results) {
+
+            console.log(results);
+            if (results.length === 1) {
+                request.session.username = userDetails.username;
+                request.session.loggedIn = true;
+                request.session.dbId = results[0]._id.toString()
+            
+                response.send({
+                    username: userDetails.username,
+                    message: ""
+                });
+            } else {
+                response.send({
+                    username: null,
+                    message: "Sorry, but username or password is wrong. Try again."
+                });
+            }  
+        })
+    } else if (userDetails.type === "logout") {
+        request.session.loggedIn = false;
+        request.session.destroy();
+
+        response.send({});
+    } else if (userDetails.type === "continue") {
+
+        if (request.session.loggedIn === true) {
+            response.send({username: request.session.username, message: ""});
+        } else {
+            response.send({message: null});
+        }
+    }
+
+});
+
 app.post("/createTask", function (request, response) {
 
     let newTask = request.body;
@@ -72,6 +138,12 @@ app.post("/createTask", function (request, response) {
 
         // Save task to database.
         // tasks.push(newTask);
+
+        console.log(session);
+
+        newTask.owner = request.session.dbId.toString();
+
+        console.log(newTask);
 
         let taskObject = new notesModel(newTask);
 
@@ -103,7 +175,9 @@ app.post("/createTask", function (request, response) {
 
 app.post("/list", function (request, response) {
 
-    notesModel.find({}, function(error, results) {
+    console.log(request.session.dbId);
+
+    notesModel.find({owner: request.session.dbId}, function(error, results) {
         checkError(error, "Successfully recieved tasks from Database.");
 
         if (error) {
@@ -113,6 +187,8 @@ app.post("/list", function (request, response) {
         
             response.send(responseObject);
         } else {
+
+            console.log(results);
             let responseObject = {
                 list: results
             };
@@ -126,7 +202,7 @@ app.post("/list", function (request, response) {
 
 app.post("/getTask", function (request, response) {
 
-    notesModel.find({_id: request.body.id}, function (error, results) {
+    notesModel.find({owner: request.session.dbId, _id: request.body.id}, function (error, results) {
         checkError(error, "Successfully searched documents.");
 
         response.send(results[0]);
@@ -145,7 +221,7 @@ app.post("/getTask", function (request, response) {
 });
 
 app.post("/deleteTask", function (request, response) {
-    notesModel.findByIdAndRemove({_id: request.body._id}, function(error, results) {
+    notesModel.findByIdAndRemove({owner: request.session.dbId, _id: request.body._id}, function(error, results) {
         checkError(error, "Successfully searched documents.");
 
         const objectToSend = {
@@ -161,7 +237,7 @@ app.post("/completeTask", function (request, response) {
 
     let taskId = request.body._id;
 
-    notesModel.findByIdAndUpdate({_id: taskId}, {completed: "true"}, function (error, results) {
+    notesModel.findByIdAndUpdate({owner: request.session.dbId, _id: taskId}, {completed: "true"}, function (error, results) {
         checkError(error, "Successfully updated a document");
 
         if (error) {
@@ -183,7 +259,7 @@ app.post("/updateTask", function (request, response) {
         priority: request.body.priority
     }
 
-    notesModel.findByIdAndUpdate({_id: taskId}, updates, function (error, results) {
+    notesModel.findByIdAndUpdate({owner: request.session.dbId, _id: taskId}, updates, function (error, results) {
         checkError(error, "Successfully updated a document");
         
         if (error) {
